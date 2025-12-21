@@ -17,15 +17,18 @@ namespace SmartTasks.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves all tasks from the system.
+        /// Retrieves tasks with server-side pagination.
         /// </summary>
-        /// <returns>List of TaskResponseDto</returns>
-        /// <response code="200">Returns the list of tasks</response>
-        [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPagedAsync(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var tasks = await _taskService.GetAllAsync();
-            return Ok(tasks);
+            if (pageNumber <= 0 || pageSize <= 0)
+                return BadRequest("PageNumber and PageSize must be greater than zero.");
+
+            var result = await _taskService.GetPagedAsync(pageNumber, pageSize);
+            return Ok(result);
         }
 
         /// <summary>

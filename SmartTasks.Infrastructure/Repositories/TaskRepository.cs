@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartTasks.API.Repositories.Abstraction;
+using SmartTasks.Application.Common;
 using SmartTasks.Domain.Entities;
 using SmartTasks.Infrastructure.Persistence;
 
@@ -14,9 +15,25 @@ namespace SmartTasks.Infrastructure.Repositories.Implementation
             _context = context;
         }
 
-        public async Task<IEnumerable<TaskItem>> GetAllAsync()
+        public async Task<PagedResult<TaskItem>> GetPagedAsync(int pageNumber, int pageSize)
         {
-            return await _context.TaskItems.ToListAsync();
+            var query = _context.TaskItems.AsNoTracking();
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(x => x.CreatedOn)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<TaskItem>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                Items = items
+            };
         }
 
         public async Task<TaskItem?> GetByIdAsync(Guid id)

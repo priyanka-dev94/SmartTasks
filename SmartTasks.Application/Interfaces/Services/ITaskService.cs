@@ -1,10 +1,11 @@
-﻿using SmartTasks.Application.DTOs;
+﻿using SmartTasks.Application.Common;
+using SmartTasks.Application.DTOs;
 
 namespace SmartTasks.Application.Interfaces.Services
 {
     public interface ITaskService
     {
-        Task<IEnumerable<TaskResponseDto>> GetAllAsync();
+        Task<PagedResult<TaskResponseDto>> GetPagedAsync(int pageNumber, int pageSize);
         Task<TaskResponseDto?> GetByIdAsync(Guid id);
         Task<TaskResponseDto> CreateAsync(TaskCreateDto dto);
         Task<bool> UpdateAsync(Guid id, TaskUpdateDto dto);
