@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartTasks.API.Filters;
+using SmartTasks.Application.Common;
 using SmartTasks.Application.DTOs;
 using SmartTasks.Application.Interfaces.Services;
 
@@ -20,16 +21,12 @@ namespace SmartTasks.API.Controllers
         /// Retrieves tasks with server-side pagination.
         /// </summary>
         [HttpGet("paged")]
-        public async Task<IActionResult> GetPagedAsync(
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetPagedAsync([FromQuery] PaginationParams pagination)
         {
-            if (pageNumber <= 0 || pageSize <= 0)
-                return BadRequest("PageNumber and PageSize must be greater than zero.");
-
-            var result = await _taskService.GetPagedAsync(pageNumber, pageSize);
+            var result = await _taskService.GetPagedAsync(pagination);
             return Ok(result);
         }
+
 
         /// <summary>
         /// Retrieves a specific task by its unique ID.

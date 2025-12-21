@@ -18,14 +18,16 @@ namespace SmartTasks.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<PagedResult<TaskResponseDto>> GetPagedAsync(int pageNumber, int pageSize)
+        public async Task<PagedResult<TaskResponseDto>> GetPagedAsync(PaginationParams pagination)
         {
-            var result = await _repo.GetPagedAsync(pageNumber, pageSize);
+            var result = await _repo.GetPagedAsync(
+                pagination.PageNumber,
+                pagination.PageSize);
 
             return new PagedResult<TaskResponseDto>
             {
-                PageNumber = result.PageNumber,
-                PageSize = result.PageSize,
+                PageNumber = pagination.PageNumber,
+                PageSize = pagination.PageSize,
                 TotalCount = result.TotalCount,
                 Items = _mapper.Map<IReadOnlyList<TaskResponseDto>>(result.Items)
             };
