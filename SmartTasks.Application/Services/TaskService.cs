@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SmartTasks.API.Repositories.Abstraction;
+using SmartTasks.Application.Common;
 using SmartTasks.Application.DTOs;
 using SmartTasks.Application.Interfaces.Services;
 using SmartTasks.Domain.Entities;
@@ -17,10 +18,17 @@ namespace SmartTasks.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<TaskResponseDto>> GetAllAsync()
+        public async Task<PagedResult<TaskResponseDto>> GetPagedAsync(int pageNumber, int pageSize)
         {
-            var items = await _repo.GetAllAsync();
-            return _mapper.Map<IEnumerable<TaskResponseDto>>(items);
+            var result = await _repo.GetPagedAsync(pageNumber, pageSize);
+
+            return new PagedResult<TaskResponseDto>
+            {
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize,
+                TotalCount = result.TotalCount,
+                Items = _mapper.Map<IReadOnlyList<TaskResponseDto>>(result.Items)
+            };
         }
 
         public async Task<TaskResponseDto?> GetByIdAsync(Guid id)
