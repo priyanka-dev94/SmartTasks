@@ -1,3 +1,4 @@
+using SmartTasks.API.Middlewares;
 using SmartTasks.Application.Services;
 using SmartTasks.Infrastructure.Extensions;
 using TaskManagementSystem.Application.Extensions;
@@ -21,6 +22,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

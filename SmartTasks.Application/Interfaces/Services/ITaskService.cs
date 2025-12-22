@@ -8,8 +8,8 @@ namespace SmartTasks.Application.Interfaces.Services
         Task<PagedResult<TaskResponseDto>> GetPagedAsync(PaginationParams pagination);
         Task<TaskResponseDto?> GetByIdAsync(Guid id);
         Task<TaskResponseDto> CreateAsync(TaskCreateDto dto);
-        Task<bool> UpdateAsync(Guid id, TaskUpdateDto dto);
-        Task<bool> DeleteAsync(Guid id);
+        Task UpdateAsync(Guid id, TaskUpdateDto dto);
+        Task DeleteAsync(Guid id);
     }
 
 

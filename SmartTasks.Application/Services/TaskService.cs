@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using SmartTasks.API.Repositories.Abstraction;
 using SmartTasks.Application.Common;
+using SmartTasks.Application.Common.Exceptions;
 using SmartTasks.Application.DTOs;
 using SmartTasks.Application.Interfaces.Services;
 using SmartTasks.Domain.Entities;
+using System.Threading.Tasks;
 
 namespace SmartTasks.Application.Services
 {
@@ -36,6 +39,8 @@ namespace SmartTasks.Application.Services
         public async Task<TaskResponseDto?> GetByIdAsync(Guid id)
         {
             var item = await _repo.GetByIdAsync(id);
+            if (item == null)
+                throw new NotFoundException($"Task with id '{id}' was not found.");
             return _mapper.Map<TaskResponseDto?>(item);
         }
 
@@ -50,24 +55,33 @@ namespace SmartTasks.Application.Services
             return _mapper.Map<TaskResponseDto>(entity);
         }
 
-        public async Task<bool> UpdateAsync(Guid id, TaskUpdateDto dto)
+        public async Task UpdateAsync(Guid id, TaskUpdateDto dto)
         {
             var entity = await _repo.GetByIdAsync(id);
-            if (entity == null) return false;
+            if (entity == null)
+                throw new NotFoundException($"Task with id '{id}' was not found.");
 
             _mapper.Map(dto, entity);
 
-            await _repo.UpdateAsync(entity);
-            return await _repo.SaveChangesAsync();
+            try
+            {
+                await _repo.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new ConflictException(
+                    "Update failed due to a data conflict.", ex);
+            }
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             var entity = await _repo.GetByIdAsync(id);
-            if (entity == null) return false;
+            if (entity == null)
+                throw new NotFoundException($"Task with id '{id}' was not found.");
 
             await _repo.DeleteAsync(entity);
-            return await _repo.SaveChangesAsync();
+            await _repo.SaveChangesAsync();
         }
     }
 }

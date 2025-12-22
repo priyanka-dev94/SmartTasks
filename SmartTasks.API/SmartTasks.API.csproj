@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Folder Include="BackgroundServices\" />
-    <Folder Include="Middlewares\" />
     <Folder Include="wwwroots\uploads\" />
   </ItemGroup>
 

@@ -82,10 +82,7 @@ namespace SmartTasks.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var success = await _taskService.UpdateAsync(id, dto);
-            if (!success)
-                return NotFound();
-
+            await _taskService.UpdateAsync(id, dto);
             return NoContent();
         }
 
@@ -99,10 +96,7 @@ namespace SmartTasks.API.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            var success = await _taskService.DeleteAsync(id);
-            if (!success)
-                return NotFound();
-
+            await _taskService.DeleteAsync(id);
             return NoContent();
         }
     }
