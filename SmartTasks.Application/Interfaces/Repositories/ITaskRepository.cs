@@ -4,7 +4,7 @@ namespace SmartTasks.API.Repositories.Abstraction
 {
     public interface ITaskRepository
     {
-        Task<PagedResult<TaskItem>> GetPagedAsync(int pageNumber, int pageSize);
+        Task<PagedResult<TaskItem>> GetPagedAsync(TaskQueryParams query);
         Task<TaskItem?> GetByIdAsync(Guid id);
         Task AddAsync(TaskItem item);
         Task UpdateAsync(TaskItem item);

@@ -21,9 +21,9 @@ namespace SmartTasks.API.Controllers
         /// Retrieves tasks with server-side pagination.
         /// </summary>
         [HttpGet("paged")]
-        public async Task<IActionResult> GetPagedAsync([FromQuery] PaginationParams pagination)
+        public async Task<IActionResult> GetPagedAsync([FromQuery] TaskQueryParams queryParams)
         {
-            var result = await _taskService.GetPagedAsync(pagination);
+            var result = await _taskService.GetPagedAsync(queryParams);
             return Ok(result);
         }
 
