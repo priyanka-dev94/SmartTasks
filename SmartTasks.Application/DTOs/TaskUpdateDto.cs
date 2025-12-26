@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using SmartTasks.Domain.Enums;
 
 namespace SmartTasks.Application.DTOs
 {
@@ -13,6 +14,6 @@ namespace SmartTasks.Application.DTOs
 
         public DateTimeOffset? DueDate { get; set; }
 
-        public TaskStatus? Status { get; set; }
+        public Domain.Enums.TaskStatus? Status { get; set; }
     }
 }

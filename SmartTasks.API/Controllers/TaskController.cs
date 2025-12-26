@@ -21,9 +21,9 @@ namespace SmartTasks.API.Controllers
         /// Retrieves tasks with server-side pagination.
         /// </summary>
         [HttpGet("paged")]
-        public async Task<IActionResult> GetPagedAsync([FromQuery] PaginationParams pagination)
+        public async Task<IActionResult> GetPagedAsync([FromQuery] TaskQueryParams queryParams)
         {
-            var result = await _taskService.GetPagedAsync(pagination);
+            var result = await _taskService.GetPagedAsync(queryParams);
             return Ok(result);
         }
 
@@ -53,7 +53,6 @@ namespace SmartTasks.API.Controllers
         /// <response code="201">Task created successfully</response>
         /// <response code="400">If the request data is invalid</response>
         [HttpPost]
-        [ServiceFilter(typeof(ValidationFilter<TaskCreateDto>))]
         public async Task<IActionResult> CreateAsync([FromBody] TaskCreateDto dto)
         {
             if (!ModelState.IsValid)
@@ -76,16 +75,12 @@ namespace SmartTasks.API.Controllers
         /// <response code="400">Invalid model data</response>
         /// <response code="404">If the task is not found</response>
         [HttpPut("{id:guid}")]
-        [ServiceFilter(typeof(ValidationFilter<TaskUpdateDto>))]
         public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] TaskUpdateDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var success = await _taskService.UpdateAsync(id, dto);
-            if (!success)
-                return NotFound();
-
+            await _taskService.UpdateAsync(id, dto);
             return NoContent();
         }
 
@@ -99,10 +94,7 @@ namespace SmartTasks.API.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            var success = await _taskService.DeleteAsync(id);
-            if (!success)
-                return NotFound();
-
+            await _taskService.DeleteAsync(id);
             return NoContent();
         }
     }

@@ -1,3 +1,5 @@
+using SmartTasks.API.Extensions;
+using SmartTasks.API.Middlewares;
 using SmartTasks.Application.Services;
 using SmartTasks.Infrastructure.Extensions;
 using TaskManagementSystem.Application.Extensions;
@@ -7,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Layered DI
+builder.Services.AddValidationServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
@@ -17,10 +20,11 @@ builder.Services.AddAutoMapper(typeof(TaskService).Assembly, typeof(Program).Ass
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

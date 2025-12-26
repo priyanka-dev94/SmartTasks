@@ -15,22 +15,48 @@ namespace SmartTasks.Infrastructure.Repositories.Implementation
             _context = context;
         }
 
-        public async Task<PagedResult<TaskItem>> GetPagedAsync(int pageNumber, int pageSize)
+        public async Task<PagedResult<TaskItem>> GetPagedAsync(TaskQueryParams query)
         {
-            var query = _context.TaskItems.AsNoTracking();
+            IQueryable<TaskItem> tasks = _context.TaskItems.AsNoTracking();
 
-            var totalCount = await query.CountAsync();
+            // Filtering: Status
+            if (query.Status.HasValue)
+            {
+                tasks = tasks.Where(t => t.Status == query.Status.Value);
+            }
 
-            var items = await query
-                .OrderByDescending(x => x.CreatedOn)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+            // Filtering: Search
+            if (!string.IsNullOrWhiteSpace(query.Search))
+            {
+                tasks = tasks.Where(t =>
+                    t.Title.Contains(query.Search) ||
+                    (t.Description != null && t.Description.Contains(query.Search)));
+            }
+            // Sorting
+            tasks = query.SortBy.ToLower() switch
+            {
+                "title" => query.IsDescending
+                    ? tasks.OrderByDescending(t => t.Title)
+                    : tasks.OrderBy(t => t.Title),
+
+                "createdat" => query.IsDescending
+                    ? tasks.OrderByDescending(t => t.CreatedOn)
+                    : tasks.OrderBy(t => t.CreatedOn),
+
+                _ => tasks.OrderByDescending(t => t.CreatedOn)
+            };
+
+            var totalCount = await tasks.CountAsync();
+
+            var items = await tasks
+                .Skip((query.PageNumber - 1) * query.PageSize)
+                .Take(query.PageSize)
                 .ToListAsync();
 
             return new PagedResult<TaskItem>
             {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
+                PageNumber = query.PageNumber,
+                PageSize = query.PageSize,
                 TotalCount = totalCount,
                 Items = items
             };

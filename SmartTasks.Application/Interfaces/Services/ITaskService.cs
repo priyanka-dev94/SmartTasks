@@ -5,11 +5,11 @@ namespace SmartTasks.Application.Interfaces.Services
 {
     public interface ITaskService
     {
-        Task<PagedResult<TaskResponseDto>> GetPagedAsync(PaginationParams pagination);
+        Task<PagedResult<TaskResponseDto>> GetPagedAsync(TaskQueryParams queryParams);
         Task<TaskResponseDto?> GetByIdAsync(Guid id);
         Task<TaskResponseDto> CreateAsync(TaskCreateDto dto);
-        Task<bool> UpdateAsync(Guid id, TaskUpdateDto dto);
-        Task<bool> DeleteAsync(Guid id);
+        Task UpdateAsync(Guid id, TaskUpdateDto dto);
+        Task DeleteAsync(Guid id);
     }
 
 

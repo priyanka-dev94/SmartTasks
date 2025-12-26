@@ -14,14 +14,8 @@ namespace SmartTasks.Infrastructure.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
             base.OnModelCreating(modelBuilder);
-
-            // Example: configure columns, constraints, etc.
-            modelBuilder.Entity<TaskItem>(entity =>
-            {
-                entity.HasKey(x => x.Id);
-                entity.Property(x => x.Title).IsRequired().HasMaxLength(100);
-            });
         }
     }
 }
