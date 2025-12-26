@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using SmartTasks.Application.Common.Exceptions;
 using System.Net;
 using System.Text.Json;
@@ -23,6 +24,10 @@ namespace SmartTasks.API.Middlewares
             try
             {
                 await _next(context);
+            }
+            catch (ValidationException ex)
+            {
+                await HandleValidationExceptionAsync(context, ex);
             }
             catch (Exception ex)
             {
@@ -73,5 +78,25 @@ namespace SmartTasks.API.Middlewares
                 HttpStatusCode.Conflict => "Conflict",
                 _ => "Internal server error"
             };
+
+        private async Task HandleValidationExceptionAsync(HttpContext context, ValidationException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var errors = ex.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(e => e.ErrorMessage).ToArray()
+                );
+
+            var problem = new ValidationProblemDetails(errors)
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Validation failed"
+            };
+
+            await context.Response.WriteAsJsonAsync(problem);
+        }
     }
 }

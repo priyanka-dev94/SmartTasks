@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SmartTasks.API.Repositories.Abstraction;
 using SmartTasks.Application.Common;
@@ -13,11 +14,18 @@ namespace SmartTasks.Application.Services
     {
         private readonly ITaskRepository _repo;
         private readonly IMapper _mapper;
+        private readonly IValidator<TaskCreateDto> _createValidator;
+        private readonly IValidator<TaskUpdateDto> _updateValidator;
 
-        public TaskService(ITaskRepository repo, IMapper mapper)
+        public TaskService(ITaskRepository repo,
+                            IMapper mapper,
+                            IValidator<TaskCreateDto> createValidator,
+                            IValidator<TaskUpdateDto> updateValidator)
         {
             _repo = repo;
             _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         public async Task<PagedResult<TaskResponseDto>> GetPagedAsync(TaskQueryParams queryParams)
@@ -43,6 +51,11 @@ namespace SmartTasks.Application.Services
 
         public async Task<TaskResponseDto> CreateAsync(TaskCreateDto dto)
         {
+            var result = await _createValidator.ValidateAsync(dto);
+
+            if (!result.IsValid)
+                throw new ValidationException(result.Errors);
+
             var entity = _mapper.Map<TaskItem>(dto);
             entity.Id = Guid.NewGuid();
 
@@ -54,6 +67,11 @@ namespace SmartTasks.Application.Services
 
         public async Task UpdateAsync(Guid id, TaskUpdateDto dto)
         {
+            var result = await _updateValidator.ValidateAsync(dto);
+
+            if (!result.IsValid)
+                throw new ValidationException(result.Errors);
+
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null)
                 throw new NotFoundException($"Task with id '{id}' was not found.");

@@ -1,10 +1,7 @@
 ﻿using FluentValidation;
-using SmartTasks.API.Filters;
-using SmartTasks.API.Repositories.Abstraction;
 using SmartTasks.API.Validators;
 using SmartTasks.Application.DTOs;
 using SmartTasks.Application.Validators;
-using SmartTasks.Infrastructure.Repositories.Implementation;
 using System.Reflection;
 
 namespace SmartTasks.API.Extensions
@@ -29,10 +26,7 @@ namespace SmartTasks.API.Extensions
             services.AddScoped<IValidator<TaskCreateDto>, TaskCreateDtoValidator>();
             services.AddScoped<IValidator<TaskUpdateDto>, TaskUpdateDtoValidator>();
 
-            // Register filters
-            services.AddScoped<ValidationFilter<TaskCreateDto>>();
-            services.AddScoped<ValidationFilter<TaskUpdateDto>>();
-
+            services.AddValidatorsFromAssemblyContaining<TaskCreateDtoValidator>();
             return services;
         }
     }

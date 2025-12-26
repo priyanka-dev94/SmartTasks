@@ -53,7 +53,6 @@ namespace SmartTasks.API.Controllers
         /// <response code="201">Task created successfully</response>
         /// <response code="400">If the request data is invalid</response>
         [HttpPost]
-        [ServiceFilter(typeof(ValidationFilter<TaskCreateDto>))]
         public async Task<IActionResult> CreateAsync([FromBody] TaskCreateDto dto)
         {
             if (!ModelState.IsValid)
@@ -76,7 +75,6 @@ namespace SmartTasks.API.Controllers
         /// <response code="400">Invalid model data</response>
         /// <response code="404">If the task is not found</response>
         [HttpPut("{id:guid}")]
-        [ServiceFilter(typeof(ValidationFilter<TaskUpdateDto>))]
         public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] TaskUpdateDto dto)
         {
             if (!ModelState.IsValid)
