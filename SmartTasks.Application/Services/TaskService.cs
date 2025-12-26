@@ -6,7 +6,6 @@ using SmartTasks.Application.Common.Exceptions;
 using SmartTasks.Application.DTOs;
 using SmartTasks.Application.Interfaces.Services;
 using SmartTasks.Domain.Entities;
-using System.Threading.Tasks;
 
 namespace SmartTasks.Application.Services
 {
