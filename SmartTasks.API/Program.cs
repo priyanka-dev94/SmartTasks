@@ -19,6 +19,7 @@ builder.Services.AddAutoMapper(typeof(TaskService).Assembly, typeof(Program).Ass
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCORSPolicy();
 
 builder.Services.AddOpenApi();
 
@@ -35,6 +36,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowReactApp");
 
 app.UseAuthorization();
 

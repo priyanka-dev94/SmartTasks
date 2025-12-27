@@ -9,8 +9,9 @@ namespace SmartTasks.Domain.Enums
     public enum TaskStatus
     {
         Pending = 0,
-        Completed = 1,
-        Snoozed = 2,
-        Archived = 3
+        InProgress = 1,
+        Completed = 2,
+        Snoozed = 3,
+        Archived = 4
     }
 }
