@@ -35,7 +35,7 @@ namespace SmartTasks.API.Controllers
         /// <returns>TaskResponseDto if found</returns>
         /// <response code="200">Returns the requested task</response>
         /// <response code="404">If the task is not found</response>
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}", Name = "GetTaskById")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
             var task = await _taskService.GetByIdAsync(id);
@@ -44,6 +44,7 @@ namespace SmartTasks.API.Controllers
 
             return Ok(task);
         }
+
 
         /// <summary>
         /// Creates a new task in the system.
@@ -60,9 +61,11 @@ namespace SmartTasks.API.Controllers
 
             var createdTask = await _taskService.CreateAsync(dto);
 
-            return CreatedAtAction(nameof(GetByIdAsync),
+            return CreatedAtRoute(
+                "GetTaskById",
                 new { id = createdTask.Id },
-                createdTask);
+                createdTask
+            );
         }
 
         /// <summary>

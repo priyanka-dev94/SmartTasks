@@ -13,3 +13,15 @@ export const getTasks = async (
   const response = await api.get("/tasks/paged", { params });
   return response.data;
 };
+
+export interface CreateTaskRequest {
+  title: string;
+  description?: string;
+}
+
+export const createTask = async (
+  data: CreateTaskRequest
+): Promise<TaskItem> => {
+  const response = await api.post("/tasks", data);
+  return response.data;
+};

@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useTasks } from "../hooks/useTasks";
 import { TaskTable } from "../components/TaskTable";
 import { StatusFilter } from "../components/StatusFilter";
-import { TaskStatus } from "../models/task";
+import { type TaskStatus } from "../models/task";
+import { CreateTaskModal } from "../components/CreateTaskModal";
 
 export const TasksPage = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [status, setStatus] = useState<TaskStatus | undefined>();
+  const [showModal, setShowModal] = useState(false);
 
   const { data, isLoading, error } = useTasks({
     pageNumber,
@@ -19,10 +21,16 @@ export const TasksPage = () => {
 
   return (
     <div className="p-6 space-y-4">
-      <div className="flex items-center gap-4">
+      
+      <div className="flex justify-between items-center">
         <StatusFilter value={status} onChange={setStatus} />
-      </div>
 
+      <button className="px-3 py-1 bg-blue-600 text-white rounded"
+          onClick={() => setShowModal(true)}>
+          + New Task
+        </button>
+      </div>
+      
       <TaskTable tasks={data!.items} />
 
       <div className="flex gap-2">
@@ -42,6 +50,8 @@ export const TasksPage = () => {
           Next
         </button>
       </div>
+      {showModal && <CreateTaskModal onClose={() => setShowModal(false)} />}
     </div>
+    
   );
 };
