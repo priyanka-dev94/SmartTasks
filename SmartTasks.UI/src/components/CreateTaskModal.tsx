@@ -1,6 +1,7 @@
 import { useState } from "react";
-const [submitError, setSubmitError] = useState<string | null>(null);
 import { useCreateTask } from "../hooks/useCreateTask";
+import axios from "axios";
+import { type ValidationProblemDetails } from "../models/problemDetails";
 
 interface Props {
   onClose: () => void;
@@ -9,11 +10,15 @@ interface Props {
 export const CreateTaskModal = ({ onClose }: Props) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [fieldErrors, setFieldErrors] =
+  useState<Record<string, string[]>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const { mutateAsync, isPending, error } = useCreateTask();
 
   const handleSubmit = async () => {
         setSubmitError(null);
+        setFieldErrors({});
 
         try {
             await mutateAsync({
@@ -23,7 +28,16 @@ export const CreateTaskModal = ({ onClose }: Props) => {
 
             onClose();
         } catch (err) {
-            setSubmitError("Failed to create task");
+            if (axios.isAxiosError(err)) {
+            const data = err.response?.data as ValidationProblemDetails;
+
+            if (data?.errors) {
+                setFieldErrors(data.errors);
+                return;
+            }
+            }
+
+            setSubmitError("Something went wrong. Please try again.");
         }
     };
 
@@ -33,11 +47,18 @@ export const CreateTaskModal = ({ onClose }: Props) => {
         <h2 className="text-lg font-semibold">Create Task</h2>
 
         <input
-          className="w-full border px-3 py-2 rounded"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
         />
+
+        {fieldErrors.Title && (
+        <p className="text-sm text-red-600">
+            {fieldErrors.Title[0]}
+        </p>
+        )}
+
 
         <textarea
           className="w-full border px-3 py-2 rounded"
@@ -45,6 +66,12 @@ export const CreateTaskModal = ({ onClose }: Props) => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
+
+        {fieldErrors.Description && (
+        <p className="text-sm text-red-600">
+            {fieldErrors.Description[0]}
+        </p>
+        )}
 
         {submitError && (
           <p className="text-sm text-red-600">
