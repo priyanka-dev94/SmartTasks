@@ -17,11 +17,27 @@ export const getTasks = async (
 export interface CreateTaskRequest {
   title: string;
   description?: string;
+  dueDate?: string | null;
 }
 
 export const createTask = async (
   data: CreateTaskRequest
 ): Promise<TaskItem> => {
   const response = await api.post("/tasks", data);
+  return response.data;
+};
+
+export interface UpdateTaskRequest {
+  title: string;
+  description?: string;
+  status: TaskStatus;
+  dueDate?: string | null;
+}
+
+export const updateTask = async (
+  id: string,
+  data: UpdateTaskRequest
+): Promise<TaskItem> => {
+  const response = await api.put(`/tasks/${id}`, data);
   return response.data;
 };

@@ -10,6 +10,7 @@ interface Props {
 export const CreateTaskModal = ({ onClose }: Props) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [dueDate, setDueDate] = useState<string>("");
   const [fieldErrors, setFieldErrors] =
   useState<Record<string, string[]>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -24,6 +25,7 @@ export const CreateTaskModal = ({ onClose }: Props) => {
             await mutateAsync({
             title,
             description,
+            dueDate: dueDate ? new Date(dueDate).toISOString() : null,
             });
 
             onClose();
@@ -72,6 +74,18 @@ export const CreateTaskModal = ({ onClose }: Props) => {
             {fieldErrors.Description[0]}
         </p>
         )}
+
+        <input
+            type="date"
+            className="w-full border px-3 py-2 rounded"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+        />
+
+        {fieldErrors.DueDate && (
+        <p className="text-sm text-red-600">{fieldErrors.DueDate[0]}</p>
+        )}
+
 
         {submitError && (
           <p className="text-sm text-red-600">

@@ -2,13 +2,15 @@ import { useState } from "react";
 import { useTasks } from "../hooks/useTasks";
 import { TaskTable } from "../components/TaskTable";
 import { StatusFilter } from "../components/StatusFilter";
-import { type TaskStatus } from "../models/task";
+import { type TaskItem, type TaskStatus } from "../models/task";
 import { CreateTaskModal } from "../components/CreateTaskModal";
+import { EditTaskModal } from "../components/EditTaskModal";
 
 export const TasksPage = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [status, setStatus] = useState<TaskStatus | undefined>();
   const [showModal, setShowModal] = useState(false);
+  const [editingTask, setEditingTask] = useState<TaskItem | null>(null);
 
   const { data, isLoading, error } = useTasks({
     pageNumber,
@@ -31,7 +33,7 @@ export const TasksPage = () => {
         </button>
       </div>
       
-      <TaskTable tasks={data!.items} />
+      <TaskTable tasks={data!.items} onEdit={(task) => setEditingTask(task)}/>
 
       <div className="flex gap-2">
         <button
@@ -51,6 +53,12 @@ export const TasksPage = () => {
         </button>
       </div>
       {showModal && <CreateTaskModal onClose={() => setShowModal(false)} />}
+      {editingTask && (
+        <EditTaskModal
+          task={editingTask}
+          onClose={() => setEditingTask(null)}
+        />
+      )}
     </div>
     
   );

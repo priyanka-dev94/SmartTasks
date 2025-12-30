@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using SmartTasks.Domain.Enums;
+﻿using SmartTasks.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace SmartTasks.Application.DTOs
 {
@@ -14,6 +15,7 @@ namespace SmartTasks.Application.DTOs
 
         public DateTimeOffset? DueDate { get; set; }
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Domain.Enums.TaskStatus? Status { get; set; }
     }
 }
