@@ -3,7 +3,7 @@ import { StatusBadge } from "./StatusBadge";
 import { isOverdue } from "../utils/dateUtils";
 import { getSnoozeDate } from "../utils/snoozeUtils";
 import { useSnoozeTask } from "../hooks/useSnoozeTask";
-
+import { useUnarchiveTask } from "../hooks/useUnarchiveTask";
 
 interface Props {
   tasks: TaskItem[];
@@ -12,6 +12,7 @@ interface Props {
 
 export const TaskTable = ({ tasks, onEdit }: Props) => {
   const { mutate: snoozeTask } = useSnoozeTask();
+  const { mutate: unarchiveTask } = useUnarchiveTask();
 
   return (
     <table className="w-full border border-gray-200 rounded overflow-hidden">
@@ -53,12 +54,12 @@ export const TaskTable = ({ tasks, onEdit }: Props) => {
                 : "—"}
             </td>
             <td className="border px-3 py-2 text-center space-x-2">
-              <button
+              {t.status != "Archived" && <button
                 className="text-blue-600 text-sm hover:underline"
                 onClick={() => onEdit(t)}
               >
                 Edit
-              </button>
+              </button>}
 
               {t.status !== "Completed" && t.status !== "Archived" && (
                 <>
@@ -76,6 +77,22 @@ export const TaskTable = ({ tasks, onEdit }: Props) => {
                   </button>
                 </>
               )}
+              {t.status === "Archived" && (
+                <button
+                  className="text-green-600 text-sm hover:underline"
+                  onClick={() =>
+                    unarchiveTask({
+                      id: t.id,
+                      title: t.title,
+                      description: t.description,
+                      dueDate: t.dueDate,
+                    })
+                  }
+                >
+                  Unarchive
+                </button>
+              )}
+
             </td>
             
           </tr>
