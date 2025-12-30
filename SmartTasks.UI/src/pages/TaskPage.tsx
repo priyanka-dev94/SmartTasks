@@ -17,10 +17,11 @@ export const TasksPage = () => {
     pageSize: 10,
     status,
   });
-  const hasNextPage = data!.pageNumber * data!.pageSize < data!.totalCount;
+  const hasNextPage = data ? data.pageNumber * data.pageSize < data.totalCount : false;
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error loading tasks</p>;
+  if (!data) return <p>No data available</p>;
 
   return (
     <div className="p-6 space-y-4">
@@ -34,7 +35,7 @@ export const TasksPage = () => {
         </button>
       </div>
       
-      <TaskTable tasks={data!.items} onEdit={(task) => setEditingTask(task)}/>
+      <TaskTable tasks={data.items} onEdit={(task) => setEditingTask(task)}/>
 
       <div className="flex gap-2">
         <button

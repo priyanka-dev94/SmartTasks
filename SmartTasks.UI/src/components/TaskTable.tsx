@@ -1,6 +1,9 @@
 import { type TaskItem } from "../models/task";
 import { StatusBadge } from "./StatusBadge";
 import { isOverdue } from "../utils/dateUtils";
+import { getSnoozeDate } from "../utils/snoozeUtils";
+import { useSnoozeTask } from "../hooks/useSnoozeTask";
+
 
 interface Props {
   tasks: TaskItem[];
@@ -8,6 +11,8 @@ interface Props {
 }
 
 export const TaskTable = ({ tasks, onEdit }: Props) => {
+  const { mutate: snoozeTask } = useSnoozeTask();
+
   return (
     <table className="w-full border border-gray-200 rounded overflow-hidden">
       <thead className="bg-gray-50">
@@ -47,11 +52,30 @@ export const TaskTable = ({ tasks, onEdit }: Props) => {
                 ? new Date(t.dueDate).toLocaleDateString()
                 : "—"}
             </td>
-            <td className="border px-3 py-2 text-center">
+            <td className="border px-3 py-2 text-center space-x-2">
               <button
                 className="text-blue-600 text-sm hover:underline"
                 onClick={() => onEdit(t)}
-              >Edit</button>
+              >
+                Edit
+              </button>
+
+              {t.status !== "Completed" && t.status !== "Archived" && (
+                <>
+                  <button
+                    className="text-orange-600 text-sm hover:underline"
+                    onClick={() =>
+                      snoozeTask({
+                        id: t.id,
+                        dueDate: getSnoozeDate("tomorrow"),
+                        title: t.title
+                      })
+                    }
+                  >
+                    Snooze
+                  </button>
+                </>
+              )}
             </td>
             
           </tr>
