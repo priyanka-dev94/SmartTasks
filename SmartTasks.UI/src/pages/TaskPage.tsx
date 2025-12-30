@@ -17,6 +17,7 @@ export const TasksPage = () => {
     pageSize: 10,
     status,
   });
+  const hasNextPage = data!.pageNumber * data!.pageSize < data!.totalCount;
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error loading tasks</p>;
@@ -46,7 +47,7 @@ export const TasksPage = () => {
 
         <button
           className="px-3 py-1 border rounded disabled:opacity-50"
-          disabled={data!.items.length < 10}
+          disabled={!hasNextPage}
           onClick={() => setPageNumber((p) => p + 1)}
         >
           Next

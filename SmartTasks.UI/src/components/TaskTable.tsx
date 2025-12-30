@@ -1,5 +1,6 @@
 import { type TaskItem } from "../models/task";
 import { StatusBadge } from "./StatusBadge";
+import { isOverdue } from "../utils/dateUtils";
 
 interface Props {
   tasks: TaskItem[];
@@ -20,15 +21,28 @@ export const TaskTable = ({ tasks, onEdit }: Props) => {
       </thead>
       <tbody>
         {tasks.map((t) => (
-          <tr key={t.id} className="hover:bg-gray-50 odd:bg-white even:bg-gray-50/50">
+          <tr key={t.id} className={`hover:bg-gray-50 ${
+            isOverdue(t.dueDate, t.status)
+              ? "bg-red-50 border-l-4 border-red-500"
+              : "odd:bg-white even:bg-gray-50/50"
+          }`}>
             <td className="border px-3 py-2">{t.title}</td>
             <td className="border px-3 py-2 text-center">
               <StatusBadge status={t.status} />
+              {isOverdue(t.dueDate, t.status) && (
+                <span className="ml-2 text-xs text-red-600 bg-red-100 px-2 py-0.5 rounded">
+                  Overdue
+                </span>
+              )}
             </td>
             <td className="border px-3 py-2 text-center">
               {new Date(t.createdOn).toLocaleDateString()}
             </td>
-            <td className="border px-3 py-2 text-center">
+            <td className={`border px-3 py-2 text-center ${
+              isOverdue(t.dueDate, t.status)
+                ? "text-red-600 font-semibold"
+                : ""
+            }`}>
               {t.dueDate
                 ? new Date(t.dueDate).toLocaleDateString()
                 : "—"}
