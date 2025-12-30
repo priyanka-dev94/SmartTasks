@@ -8,9 +8,10 @@ import { useUnarchiveTask } from "../hooks/useUnarchiveTask";
 interface Props {
   tasks: TaskItem[];
   onEdit: (task: TaskItem) => void;
+  onDelete: (taskId: TaskItem) => void;
 }
 
-export const TaskTable = ({ tasks, onEdit }: Props) => {
+export const TaskTable = ({ tasks, onEdit, onDelete }: Props) => {
   const { mutate: snoozeTask } = useSnoozeTask();
   const { mutate: unarchiveTask } = useUnarchiveTask();
 
@@ -93,8 +94,15 @@ export const TaskTable = ({ tasks, onEdit }: Props) => {
                 </button>
               )}
 
-            </td>
-            
+              {t.status !== "Archived" && (
+                <button
+                  className="text-red-600 text-sm hover:underline ml-2"
+                  onClick={() => onDelete(t)}
+                >
+                  Delete
+                </button>
+              )}
+            </td>            
           </tr>
         ))}
       </tbody>

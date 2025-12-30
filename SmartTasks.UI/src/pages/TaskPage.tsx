@@ -5,12 +5,16 @@ import { StatusFilter } from "../components/StatusFilter";
 import { type TaskItem, type TaskStatus } from "../models/task";
 import { CreateTaskModal } from "../components/CreateTaskModal";
 import { EditTaskModal } from "../components/EditTaskModal";
+import { DeleteTaskConfirmModal } from "../components/DeleteTaskConfirmModal";
+import { useDeleteTask } from "../hooks/useDeleteTask";
 
 export const TasksPage = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [status, setStatus] = useState<TaskStatus | undefined>();
   const [showModal, setShowModal] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskItem | null>(null);
+  const [deletingTask, setDeletingTask] = useState<TaskItem | null>(null);
+  const { mutateAsync, isPending } = useDeleteTask();
 
   const { data, isLoading, error } = useTasks({
     pageNumber,
@@ -35,7 +39,9 @@ export const TasksPage = () => {
         </button>
       </div>
       
-      <TaskTable tasks={data.items} onEdit={(task) => setEditingTask(task)}/>
+      <TaskTable tasks={data.items}
+        onEdit={(task) => setEditingTask(task)}
+        onDelete={(task) => setDeletingTask(task)} />
 
       <div className="flex gap-2">
         <button
@@ -54,11 +60,25 @@ export const TasksPage = () => {
           Next
         </button>
       </div>
+      {/*--Render Create task modal-->*/}
       {showModal && <CreateTaskModal onClose={() => setShowModal(false)} />}
+      {/*--Render Edit task modal-->*/}
       {editingTask && (
         <EditTaskModal
           task={editingTask}
           onClose={() => setEditingTask(null)}
+        />
+      )}
+      {/*--Render Delete task confirm modal-->*/}
+      {deletingTask && (
+        <DeleteTaskConfirmModal
+          title={deletingTask.title}
+          isLoading={isLoading}
+          onCancel={() => setDeletingTask(null)}
+          onConfirm={async () => {
+            await mutateAsync(deletingTask.id);
+            setDeletingTask(null);
+          }}
         />
       )}
     </div>
