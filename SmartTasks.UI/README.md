@@ -1,73 +1,80 @@
-# React + TypeScript + Vite
+SmartTasks UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend application for SmartTasks, built with React and TypeScript.
+It consumes the SmartTasks ASP.NET Core Web API.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ASP.NET Core
+- Entity Framework Core
+- SQL Server
+- React
+- TypeScript
+- React Query
+- Tailwind CSS
 
-## React Compiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- Task list with pagination and filtering
+- Create, edit, snooze, archive, unarchive, and delete tasks
+- Overdue task highlighting
+- Server-side validation error display
+- Confirmation for destructive actions
+- Clean separation of UI, hooks, and API clients
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Project Structure
+src/
+├── api/          # API client functions (Axios)
+├── components/   # Reusable UI components
+├── hooks/        # React Query hooks
+├── models/       # TypeScript models & types
+├── utils/        # Utility helpers (dates, snooze logic, etc.)
+├── pages/        # Page-level components
+└── main.tsx
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Prerequisites
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Node.js 18+ (recommended)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+npm
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Setup & Run
+1. Install dependencies
+npm install
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+2. Configure API base URL
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Create a .env file in SmartTasks.UI:
+
+VITE_API_BASE_URL=https://localhost:5001/api
+(Adjust the URL to match the backend API.)
+
+3. Run the development server
+npm run dev
+The app will be available at:
+http://localhost:5173
+
+## Notes
+
+This UI expects the backend API to be running.
+
+Authentication is intentionally not included in the initial phase.
+
+The application uses React Query for server-state management instead of local/global state.
+
+Backend
+
+The backend API is located in the root solution under:
+
+SmartTasks.API
+
+Refer to the root README for backend architecture and design decisions.
+
+## Future Enhancements
+
+Authentication (Azure AD / Entra ID)
+
+Deployment to Azure Static Web Apps
+
+Environment-based configuration via Azure
