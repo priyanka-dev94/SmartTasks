@@ -29,7 +29,12 @@ export const TasksPage = () => {
 
   return (
     <div className="p-6 space-y-4">
-      
+      {data && data.items.length === 0 && (
+        <div className="text-center text-gray-500 py-10">
+          No tasks found. Create your first task.
+        </div>
+        )}
+
       <div className="flex justify-between items-center">
         <StatusFilter value={status} onChange={setStatus} />
 

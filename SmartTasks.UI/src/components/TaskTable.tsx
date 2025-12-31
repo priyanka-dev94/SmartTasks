@@ -4,6 +4,7 @@ import { isOverdue } from "../utils/dateUtils";
 import { getSnoozeDate } from "../utils/snoozeUtils";
 import { useSnoozeTask } from "../hooks/useSnoozeTask";
 import { useUnarchiveTask } from "../hooks/useUnarchiveTask";
+import { useArchiveTask } from "../hooks/useArchiveTask";
 
 interface Props {
   tasks: TaskItem[];
@@ -14,6 +15,20 @@ interface Props {
 export const TaskTable = ({ tasks, onEdit, onDelete }: Props) => {
   const { mutate: snoozeTask } = useSnoozeTask();
   const { mutate: unarchiveTask } = useUnarchiveTask();
+  const { mutate: archiveTask } = useArchiveTask();
+
+  const canEdit = (status: string) =>
+    status !== "Completed" && status !== "Archived";
+
+  const canSnooze = (status: string) =>
+    status === "Pending" || status === "InProgress" || status === "Snoozed";
+
+  const canArchive = (status: string) =>
+    status !== "Archived";
+
+  const canUnarchive = (status: string) =>
+    status === "Archived";
+
 
   return (
     <table className="w-full border border-gray-200 rounded overflow-hidden">
@@ -55,54 +70,64 @@ export const TaskTable = ({ tasks, onEdit, onDelete }: Props) => {
                 : "—"}
             </td>
             <td className="border px-3 py-2 text-center space-x-2">
-              {t.status != "Archived" && <button
+            {canEdit(t.status) && (
+              <button
                 className="text-blue-600 text-sm hover:underline"
                 onClick={() => onEdit(t)}
               >
                 Edit
-              </button>}
+              </button>
+            )}
 
-              {t.status !== "Completed" && t.status !== "Archived" && (
-                <>
-                  <button
-                    className="text-orange-600 text-sm hover:underline"
-                    onClick={() =>
-                      snoozeTask({
-                        id: t.id,
-                        dueDate: getSnoozeDate("tomorrow"),
-                        title: t.title
-                      })
-                    }
-                  >
-                    Snooze
-                  </button>
-                </>
-              )}
-              {t.status === "Archived" && (
-                <button
-                  className="text-green-600 text-sm hover:underline"
-                  onClick={() =>
-                    unarchiveTask({
-                      id: t.id,
-                      title: t.title,
-                      description: t.description,
-                      dueDate: t.dueDate,
-                    })
-                  }
-                >
-                  Unarchive
-                </button>
-              )}
+            {canSnooze(t.status) && (
+              <button
+                className="text-orange-600 text-sm hover:underline"
+                onClick={() =>
+                  snoozeTask({
+                    id: t.id,
+                    title: t.title,
+                    dueDate: getSnoozeDate("tomorrow"),
+                  })
+                }
+              >
+                Snooze
+              </button>
+            )}
 
-              {t.status !== "Archived" && (
-                <button
-                  className="text-red-600 text-sm hover:underline ml-2"
-                  onClick={() => onDelete(t)}
-                >
-                  Delete
-                </button>
-              )}
-            </td>            
+            {canArchive(t.status) && !canUnarchive(t.status) && (
+              <button
+                className="text-gray-600 text-sm hover:underline"
+                onClick={() => archiveTask({
+                  id: t.id,
+                  title: t.title,
+                  dueDate: t.dueDate,
+                })}
+              >
+                Archive
+              </button>
+            )}
+
+            {canUnarchive(t.status) && (
+              <button
+                className="text-green-600 text-sm hover:underline"
+                onClick={() => unarchiveTask({
+                  id: t.id,
+                  title: t.title,
+                  dueDate: t.dueDate,
+                })}
+              >
+                Unarchive
+              </button>
+            )}
+
+            <button
+              className="text-red-600 text-sm hover:underline"
+              onClick={() => onDelete(t)}
+            >
+              Delete
+            </button>
+          </td>
+           
           </tr>
         ))}
       </tbody>
